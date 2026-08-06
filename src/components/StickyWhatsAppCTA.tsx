@@ -1,32 +1,37 @@
 import React, { useState } from 'react';
-import { ArrowUpRight, X } from 'lucide-react';
+import { ArrowUpRight, X, Calendar } from 'lucide-react';
 import { WHATSAPP_LINK, WHATSAPP_NUMBER } from '../data/agencyData';
 import { AppLanguage } from '../types';
 
 interface StickyWhatsAppCTAProps {
   currentLanguage?: AppLanguage;
+  onOpenCalendar?: () => void;
 }
 
-const STICKY_TRANSLATIONS: Record<AppLanguage, { status: string; text: string; btn: string }> = {
+const STICKY_TRANSLATIONS: Record<AppLanguage, { status: string; text: string; btn: string; bookCall: string }> = {
   EN: {
     status: 'Online Now • Direct Support',
-    text: "Want to double your leads? Let's discuss your website, SEO, or social media on WhatsApp!",
-    btn: 'Chat on WhatsApp'
+    text: "Want to double your leads? Speak on WhatsApp or schedule a direct 1-on-1 strategy call!",
+    btn: 'Chat on WhatsApp',
+    bookCall: 'Book Strategy Call'
   },
   ES: {
     status: 'En Línea Ahora • Soporte Directo',
-    text: '¿Quieres duplicar tus clientes? ¡Hablemos de tu sitio web, SEO o redes en WhatsApp!',
-    btn: 'Hablar por WhatsApp'
+    text: '¿Quieres duplicar tus clientes? ¡Habla por WhatsApp o reserva una llamada estratégica!',
+    btn: 'Hablar por WhatsApp',
+    bookCall: 'Reservar Llamada'
   },
   FR: {
     status: 'En Ligne • Support Direct',
-    text: 'Vous voulez doubler vos prospects? Discutons de votre site, SEO ou réseaux sur WhatsApp!',
-    btn: 'Discuter sur WhatsApp'
+    text: 'Vous voulez doubler vos prospects? Discutons sur WhatsApp ou réservez un appel stratégique!',
+    btn: 'Discuter sur WhatsApp',
+    bookCall: 'Réserver un Appel'
   },
   DE: {
     status: 'Jetzt Online • Direkt-Support',
-    text: 'Möchten Sie Ihre Leads verdoppeln? Besprechen wir Website, SEO oder Social Media auf WhatsApp!',
-    btn: 'Auf WhatsApp chatten'
+    text: 'Möchten Sie Ihre Leads verdoppeln? Chatten Sie auf WhatsApp oder buchen Sie ein Strategiegespräch!',
+    btn: 'Auf WhatsApp chatten',
+    bookCall: 'Termin Buchen'
   }
 };
 
@@ -36,12 +41,12 @@ const WhatsAppIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" 
   </svg>
 );
 
-export const StickyWhatsAppCTA: React.FC<StickyWhatsAppCTAProps> = ({ currentLanguage = 'EN' }) => {
+export const StickyWhatsAppCTA: React.FC<StickyWhatsAppCTAProps> = ({ currentLanguage = 'EN', onOpenCalendar }) => {
   const [minimized, setMinimized] = useState(false);
   const t = STICKY_TRANSLATIONS[currentLanguage] || STICKY_TRANSLATIONS.EN;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2.5">
       
       {!minimized && (
         <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-2xl max-w-xs text-slate-900 animate-in slide-in-from-bottom-5 duration-300 relative group">
@@ -66,33 +71,61 @@ export const StickyWhatsAppCTA: React.FC<StickyWhatsAppCTAProps> = ({ currentLan
             {t.text}
           </p>
 
-          <a
-            href={WHATSAPP_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
-            id="floating-whatsapp-bubble-link"
-            className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-500/20 transition-all"
-          >
-            <WhatsAppIcon className="w-4 h-4 text-white" />
-            <span>{t.btn}</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </a>
+          <div className="space-y-2">
+            {onOpenCalendar && (
+              <button
+                type="button"
+                onClick={onOpenCalendar}
+                className="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
+              >
+                <Calendar className="w-3.5 h-3.5 text-blue-400" />
+                <span>{t.bookCall}</span>
+              </button>
+            )}
+
+            <a
+              href={WHATSAPP_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              id="floating-whatsapp-bubble-link"
+              className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-500/20 transition-all"
+            >
+              <WhatsAppIcon className="w-4 h-4 text-white" />
+              <span>{t.btn}</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
         </div>
       )}
 
-      {/* Main Pulse WhatsApp Circle Button */}
-      <a
-        href={WHATSAPP_LINK}
-        target="_blank"
-        rel="noopener noreferrer"
-        id="floating-whatsapp-circle-btn"
-        className="relative group p-3.5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-2xl shadow-emerald-500/40 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center"
-        title={`${t.btn} (${WHATSAPP_NUMBER})`}
-      >
-        <span className="animate-ping absolute inset-0 rounded-full bg-emerald-400 opacity-30"></span>
-        <WhatsAppIcon className="w-7 h-7 text-white relative z-10" />
-      </a>
+      {/* Floating Buttons Bar */}
+      <div className="flex items-center gap-2">
+        {onOpenCalendar && (
+          <button
+            type="button"
+            onClick={onOpenCalendar}
+            className="p-3.5 rounded-full bg-slate-900 hover:bg-slate-800 text-blue-400 border border-slate-700 shadow-xl hover:scale-110 active:scale-95 transition-transform flex items-center justify-center"
+            title={t.bookCall}
+          >
+            <Calendar className="w-5 h-5" />
+          </button>
+        )}
+
+        {/* Main Pulse WhatsApp Circle Button */}
+        <a
+          href={WHATSAPP_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          id="floating-whatsapp-circle-btn"
+          className="relative group p-3.5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-2xl shadow-emerald-500/40 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center"
+          title={`${t.btn} (${WHATSAPP_NUMBER})`}
+        >
+          <span className="animate-ping absolute inset-0 rounded-full bg-emerald-400 opacity-30"></span>
+          <WhatsAppIcon className="w-7 h-7 text-white relative z-10" />
+        </a>
+      </div>
 
     </div>
   );
 };
+

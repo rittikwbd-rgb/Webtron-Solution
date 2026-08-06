@@ -21,13 +21,21 @@ export const SERVICES_LIST: Service[] = [
   {
     id: 'website-development',
     title: 'Website Development',
-    shortDesc: 'Custom high-converting websites engineered for lightning performance, top Google rankings, and maximum lead generation.',
-    fullDesc: 'We craft bespoke, enterprise-grade business websites engineered with ultra-fast page speeds, intuitive user journeys, and persuasive conversion funnels. Designed specifically for small businesses, startups, and growing enterprises in the US, UK, and Europe.',
+    shortDesc: 'End-to-end custom website engineering including UI/UX design, sub-second performance, top SEO rankings, and ongoing security maintenance.',
+    fullDesc: 'We craft bespoke, enterprise-grade business websites engineered with intuitive UI/UX design, ultra-fast page speeds, persuasive conversion funnels, and 24/7 proactive maintenance and security. Designed specifically for small businesses, startups, and growing enterprises across the US, UK, and Europe.',
     iconName: 'Globe',
     category: 'web_apps',
-    deliverables: ['Custom React / Next.js Architecture', 'Mobile First Responsive Design', 'Sub-second Load Times', 'Conversion Rate Optimized Layouts', 'Integrated CRM & WhatsApp CTAs', 'CMS Integration & Easy Content Management'],
+    deliverables: [
+      'UI/UX Design & High-Fidelity Prototyping',
+      'Custom React / Next.js Architecture',
+      'Proactive Maintenance, Security & Backups',
+      'Mobile-First Responsive Design',
+      'Sub-Second Load Times & Core Web Vitals',
+      'Conversion Rate Optimized Layouts',
+      'CMS Integration & Easy Content Management'
+    ],
     roiImpact: 'Avg +240% increase in inbound sales inquiries within 60 days.',
-    keywords: ['Website Development', 'Professional Website Design', 'Custom Website Development', 'Business Website Development', 'Website Development Agency', 'Web Development Company', 'Responsive Website Design', 'React Development', 'WordPress Development'],
+    keywords: ['Website Development', 'Professional Website Design', 'UI UX Website Design', 'Custom Website Development', 'Website Maintenance & Security', 'Business Website Development', 'Responsive Website Design', 'React Development', 'WordPress Development'],
     popular: true
   },
   {
@@ -107,28 +115,6 @@ export const SERVICES_LIST: Service[] = [
     keywords: ['Social Media Marketing', 'Digital Marketing Agency', 'Lead Generation', 'Online Marketing', 'Meta Ads', 'LinkedIn Marketing']
   },
   {
-    id: 'business-automation',
-    title: 'Business Automation & AI Integration',
-    shortDesc: 'Automate repetitive client intake, lead qualification, booking schedules, and operational workflows.',
-    fullDesc: 'Eliminate manual administrative bottlenecks by connecting your website and CRM with automated workflows, AI chatbots, instant WhatsApp auto-responders, and automated invoice dispatch systems.',
-    iconName: 'Cpu',
-    category: 'automation_design',
-    deliverables: ['Custom AI Chatbot Integration', 'Zapier & Make.com Workflow Automation', 'WhatsApp Automated Lead Nurturing', 'Instant Calendar Appointment Booking', 'Automated Email Follow-up Sequences', 'Database & CRM Synchronization'],
-    roiImpact: 'Saves 25+ staff hours per week while eliminating missed lead responses.',
-    keywords: ['Business Automation', 'AI Automation', 'CRM Integration', 'Lead Qualification Bot', 'Workflow Automation']
-  },
-  {
-    id: 'website-maintenance',
-    title: 'Website Maintenance & Security',
-    shortDesc: '24/7 proactive security monitoring, cloud daily backups, speed tune-ups, and unlimited content updates.',
-    fullDesc: 'Keep your digital infrastructure running at peak security and uptime. We handle all server patches, CMS updates, speed optimizations, SSL renewals, and emergency support so you can focus on running your business.',
-    iconName: 'ShieldCheck',
-    category: 'automation_design',
-    deliverables: ['Daily Encrypted Cloud Backups', 'Real-time Malware & Firewall Protection', 'Core Software & Plugin Updates', 'Performance & Uptime Monitoring (99.99%)', 'Unlimited Monthly Content Tweaks', 'Priority 1-Hour Emergency Response'],
-    roiImpact: 'Zero downtime guarantee and complete peace of mind.',
-    keywords: ['Website Maintenance', 'Website Security', 'Website Management', 'WordPress Maintenance', 'Web Care Plan']
-  },
-  {
     id: 'performance-optimization',
     title: 'Performance & Speed Optimization',
     shortDesc: 'Transform slow, sluggish websites into sub-second, 99+ PageSpeed score powerhouses that convert higher.',
@@ -138,28 +124,6 @@ export const SERVICES_LIST: Service[] = [
     deliverables: ['Google PageSpeed & Core Web Vitals Audit', 'Image & Asset Compression / WebP Conversion', 'Code Minification & Unused CSS Clean-up', 'Global CDN Setup (Cloudflare / Cloud Run)', 'Server Caching Architecture', 'Database Query Optimization'],
     roiImpact: 'Achieve 95-100 Core Web Vitals score & +35% instant conversion boost.',
     keywords: ['Website Speed Optimization', 'Core Web Vitals', 'PageSpeed Optimization', 'Conversion Rate Optimization', 'Website Redesign']
-  },
-  {
-    id: 'ui-ux-design',
-    title: 'UI/UX Design & Prototyping',
-    shortDesc: 'Figma wireframing, user research, and luxury interface design crafted to captivate and convert high-value clients.',
-    fullDesc: 'We craft human-centered digital interfaces with Apple-level visual discipline. Through user behavior research, high-fidelity wireframes, and interactive click-through prototypes, we create memorable digital brand experiences.',
-    iconName: 'Layout',
-    category: 'automation_design',
-    deliverables: ['User Journey Mapping & Wireframing', 'High-Fidelity Figma UI Prototypes', 'Design System & Component Library', 'Micro-Interactions & Animation Specs', 'Usability Testing & Heatmap Audits', 'Dark & Light Mode Variants'],
-    roiImpact: 'Transform visual credibility into instant enterprise trust.',
-    keywords: ['UI UX Design', 'Landing Page Design', 'Website Designer', 'UI UX Agency', 'Figma Prototyping']
-  },
-  {
-    id: 'crm-integration',
-    title: 'CRM Integration & Sales Pipelines',
-    shortDesc: 'Connect your website directly with HubSpot, Salesforce, Zoho, or custom CRMs to track every single lead.',
-    fullDesc: 'Never lose track of a prospective customer again. We integrate high-converting website forms and WhatsApp widgets directly into your sales pipeline CRM, complete with instant SMS and email team alerts.',
-    iconName: 'Database',
-    category: 'automation_design',
-    deliverables: ['HubSpot / Salesforce / Zoho Integration', 'Automated Lead Attribution Tracking', 'Instant Sales Team WhatsApp Notifications', 'Custom Lead Scoring Rules', 'Webhooks & Custom API Endpoints', 'Comprehensive Sales Pipeline Dashboards'],
-    roiImpact: '100% lead capture visibility and 3x faster response times.',
-    keywords: ['CRM Integration', 'Sales Automation', 'Lead Pipeline Setup', 'HubSpot Integration', 'Lead Generation Agency']
   }
 ];
 

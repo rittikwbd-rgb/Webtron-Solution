@@ -150,13 +150,13 @@ export const translations: Record<AppLanguage, Translations> = {
     services: {
       badge: 'Full-Spectrum Digital Services',
       title: 'High-Impact Digital Solutions For Measurable Business Growth',
-      subtitle: 'From bespoke custom website development and Flutter mobile apps to dominating Google Maps Local SEO, Social Media Marketing campaigns, and automated client workflows.',
+      subtitle: 'From bespoke custom website development (with built-in UI/UX & maintenance) and Flutter mobile apps to dominating Google Maps Local SEO, Social Media Marketing campaigns, and speed optimization.',
       categories: {
-        all: 'All 12 Services',
+        all: 'All 8 Core Services',
         web: 'Web & Mobile Apps',
-        seo: 'SEO & Paid Campaigns',
+        seo: 'SEO & Paid Ads',
         ppc: 'Social Media Marketing',
-        gbp: 'Automation & Design',
+        gbp: 'Speed & Optimization',
       },
     },
     stats: {
@@ -272,13 +272,13 @@ export const translations: Record<AppLanguage, Translations> = {
     services: {
       badge: 'Servicios Digitales Integrales',
       title: 'Soluciones Digitales de Alto Impacto para el Crecimiento Medible',
-      subtitle: 'Desde desarrollo web personalizado a medida y aplicaciones móviles Flutter hasta el dominio del SEO local en Google Maps, campañas de Marketing en Redes Sociales y flujos de trabajo automatizados.',
+      subtitle: 'Desde desarrollo web personalizado (con UI/UX y mantenimiento incluidos) y aplicaciones móviles Flutter hasta el dominio del SEO local en Google Maps, campañas en Redes Sociales y optimización de velocidad.',
       categories: {
-        all: 'Los 12 Servicios',
+        all: 'Los 8 Servicios',
         web: 'Sitios y Apps Web',
-        seo: 'SEO y Campañas',
-        ppc: 'Marketing Redes Sociales',
-        gbp: 'Automatización y Diseño',
+        seo: 'SEO y Publicidad',
+        ppc: 'Redes Sociales',
+        gbp: 'Velocidad y Rendimiento',
       },
     },
     stats: {
@@ -394,13 +394,13 @@ export const translations: Record<AppLanguage, Translations> = {
     services: {
       badge: 'Services Numériques Complets',
       title: 'Solutions Numériques à Haut Impact pour une Croissance Mesurable',
-      subtitle: 'Du développement web sur mesure et applications mobiles Flutter à la domination du SEO local sur Google Maps, campagnes de réseaux sociaux et workflows automatisés.',
+      subtitle: 'Du développement web sur mesure (avec design UI/UX et maintenance inclus) et applications mobiles Flutter au SEO local Google Maps, campagnes sur réseaux sociaux et optimisations de vitesse.',
       categories: {
-        all: 'Les 12 Services',
+        all: 'Les 8 Services',
         web: 'Web & Applications',
-        seo: 'SEO & Campagnes',
-        ppc: 'Marketing Réseaux Sociaux',
-        gbp: 'Automation & Design',
+        seo: 'SEO & Publicité',
+        ppc: 'Réseaux Sociaux',
+        gbp: 'Vitesse & Performance',
       },
     },
     stats: {
@@ -516,13 +516,13 @@ export const translations: Record<AppLanguage, Translations> = {
     services: {
       badge: 'Umfassende Digitale Dienstleistungen',
       title: 'Wirkungsvolle Digitallösungen für Messbares Unternehmenswachstum',
-      subtitle: 'Von maßgeschneiderter Website-Entwicklung und Flutter Mobile Apps bis zur Dominanz bei Google Maps SEO, Social-Media-Kampagnen und automatisierten Workflows.',
+      subtitle: 'Von maßgeschneiderter Website-Entwicklung (inklusive UI/UX Design & Wartung) und Flutter Mobile Apps bis zur Dominanz bei Google Maps SEO, Social-Media-Kampagnen und Geschwindigkeitsoptimierung.',
       categories: {
-        all: 'Alle 12 Leistungen',
+        all: 'Alle 8 Kernleistungen',
         web: 'Web & Mobile Apps',
-        seo: 'SEO & Bezahlte Kampagnen',
-        ppc: 'Social Media Marketing',
-        gbp: 'Automatisierung & Design',
+        seo: 'SEO & Ads',
+        ppc: 'Social Media',
+        gbp: 'Geschwindigkeit & Performance',
       },
     },
     stats: {

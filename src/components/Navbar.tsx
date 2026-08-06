@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Globe, Menu, X, ArrowUpRight, Sparkles, ChevronDown, Check } from 'lucide-react';
+import { MessageSquare, Globe, Menu, X, ArrowUpRight, Sparkles, ChevronDown, Check, Calendar } from 'lucide-react';
 import { WHATSAPP_LINK, WHATSAPP_NUMBER } from '../data/agencyData';
 import { TargetRegion, AppLanguage } from '../types';
 
@@ -7,6 +7,7 @@ interface NavbarProps {
   currentRegion: TargetRegion;
   onRegionChange: (region: TargetRegion) => void;
   onOpenCalculator: () => void;
+  onOpenCalendar?: () => void;
   currentLanguage?: AppLanguage;
   onLanguageChange?: (lang: AppLanguage) => void;
 }
@@ -29,6 +30,7 @@ export const NAV_TRANSLATIONS: Record<AppLanguage, {
   growthAgency: string;
   roiCalculator: string;
   chatWhatsapp: string;
+  bookCall: string;
   langSelect: string;
 }> = {
   EN: {
@@ -41,7 +43,8 @@ export const NAV_TRANSLATIONS: Record<AppLanguage, {
     availableStatus: 'Available for New Projects',
     growthAgency: 'Growth Agency',
     roiCalculator: 'ROI Calculator',
-    chatWhatsapp: 'Chat on WhatsApp',
+    chatWhatsapp: 'WhatsApp',
+    bookCall: 'Book Call',
     langSelect: 'Select Language'
   },
   ES: {
@@ -54,7 +57,8 @@ export const NAV_TRANSLATIONS: Record<AppLanguage, {
     availableStatus: 'Disponible para Proyectos',
     growthAgency: 'Agencia Digital',
     roiCalculator: 'Calculadora ROI',
-    chatWhatsapp: 'Hablar por WhatsApp',
+    chatWhatsapp: 'WhatsApp',
+    bookCall: 'Reservar Llamada',
     langSelect: 'Seleccionar Idioma'
   },
   FR: {
@@ -67,7 +71,8 @@ export const NAV_TRANSLATIONS: Record<AppLanguage, {
     availableStatus: 'Disponible pour Projets',
     growthAgency: 'Agence Croissance',
     roiCalculator: 'Calculateur ROI',
-    chatWhatsapp: 'Discuter sur WhatsApp',
+    chatWhatsapp: 'WhatsApp',
+    bookCall: 'Réserver un Appel',
     langSelect: 'Choisir la langue'
   },
   DE: {
@@ -80,7 +85,8 @@ export const NAV_TRANSLATIONS: Record<AppLanguage, {
     availableStatus: 'Verfügbar für neue Projekte',
     growthAgency: 'Wachstumsagentur',
     roiCalculator: 'ROI-Rechner',
-    chatWhatsapp: 'Auf WhatsApp chatten',
+    chatWhatsapp: 'WhatsApp',
+    bookCall: 'Termin Buchen',
     langSelect: 'Sprache wählen'
   }
 };
@@ -89,6 +95,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   currentRegion, 
   onRegionChange, 
   onOpenCalculator,
+  onOpenCalendar,
   currentLanguage = 'EN',
   onLanguageChange
 }) => {
@@ -236,13 +243,26 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span>{t.roiCalculator}</span>
             </button>
 
+            {/* DIRECT CALENDAR CTA */}
+            {onOpenCalendar && (
+              <button
+                type="button"
+                onClick={onOpenCalendar}
+                id="nav-cta-calendar"
+                className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-full transition-all duration-300 shadow-md shadow-slate-900/10 flex items-center gap-2 group"
+              >
+                <Calendar className="w-3.5 h-3.5 text-blue-400" />
+                <span>{t.bookCall}</span>
+              </button>
+            )}
+
             {/* PRIMARY CTA: Chat on WhatsApp */}
             <a
               href={WHATSAPP_LINK}
               target="_blank"
               rel="noopener noreferrer"
               id="nav-cta-whatsapp"
-              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-full transition-all duration-300 shadow-md shadow-blue-500/20 flex items-center gap-2 group"
+              className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-full transition-all duration-300 shadow-md shadow-blue-500/20 flex items-center gap-2 group"
             >
               <MessageSquare className="w-3.5 h-3.5 fill-current text-white" />
               <span>{t.chatWhatsapp}</span>
@@ -265,6 +285,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span>{currentLangObj.flag}</span>
               <span>{currentLangObj.code}</span>
             </button>
+
+            {onOpenCalendar && (
+              <button
+                type="button"
+                onClick={onOpenCalendar}
+                className="p-2 rounded-lg bg-slate-900 text-blue-400 border border-slate-800 flex items-center justify-center shadow-sm"
+                title={t.bookCall}
+              >
+                <Calendar className="w-4 h-4" />
+              </button>
+            )}
 
             <a
               href={WHATSAPP_LINK}

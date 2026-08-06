@@ -1,15 +1,16 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { MessageSquare, ArrowUpRight, CheckCircle2, Sparkles, Clock } from 'lucide-react';
+import { MessageSquare, ArrowUpRight, CheckCircle2, Sparkles, Clock, Calendar } from 'lucide-react';
 import { WHATSAPP_LINK, WHATSAPP_NUMBER, WHATSAPP_MESSAGE_PRESETS } from '../data/agencyData';
 import { AppLanguage } from '../types';
 import { translations } from '../data/translations';
 
 interface FinalCTASectionProps {
   currentLanguage?: AppLanguage;
+  onOpenCalendar?: () => void;
 }
 
-export const FinalCTASection: React.FC<FinalCTASectionProps> = ({ currentLanguage = 'EN' }) => {
+export const FinalCTASection: React.FC<FinalCTASectionProps> = ({ currentLanguage = 'EN', onOpenCalendar }) => {
   const t = translations[currentLanguage]?.ctaSection || translations.EN.ctaSection;
 
   return (
@@ -75,17 +76,37 @@ export const FinalCTASection: React.FC<FinalCTASectionProps> = ({ currentLanguag
           </div>
         </div>
 
-        {/* MAIN PRIMARY CTA BUTTON */}
-        <div className="pt-4 flex flex-col items-center justify-center gap-4">
+        {/* MAIN DUAL CTA BUTTONS */}
+        <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+          
+          {/* DIRECT CALENDAR BOOKING CTA */}
+          {onOpenCalendar && (
+            <button
+              type="button"
+              onClick={onOpenCalendar}
+              id="final-cta-calendar"
+              className="w-full sm:w-auto px-8 py-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-base flex items-center justify-center gap-3 shadow-xl shadow-slate-900/10 hover:scale-105 active:scale-95 transition-all"
+            >
+              <div className="w-9 h-9 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                <Calendar className="w-5 h-5" />
+              </div>
+              <div className="text-left">
+                <div className="text-base font-black text-white">Book 1-on-1 Strategy Call</div>
+                <div className="text-xs text-blue-300 font-medium">Embedded Direct Calendar</div>
+              </div>
+            </button>
+          )}
+
+          {/* PRIMARY WHATSAPP CTA */}
           <a
             href={WHATSAPP_LINK}
             target="_blank"
             rel="noopener noreferrer"
             id="final-cta-whatsapp"
-            className="relative group overflow-hidden rounded-2xl p-[1px] font-extrabold text-lg tracking-wide transition-all shadow-xl shadow-blue-500/20 hover:scale-105 active:scale-95"
+            className="w-full sm:w-auto relative group overflow-hidden rounded-2xl p-[1px] font-extrabold text-base tracking-wide transition-all shadow-xl shadow-blue-500/20 hover:scale-105 active:scale-95"
           >
             <span className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600"></span>
-            <div className="relative px-8 py-5 rounded-[15px] bg-blue-600 hover:bg-blue-700 flex items-center gap-3 text-white transition-colors">
+            <div className="relative px-8 py-5 rounded-[15px] bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-3 text-white transition-colors">
               <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white shadow-sm">
                 <MessageSquare className="w-4 h-4 fill-current" />
               </div>
@@ -93,11 +114,13 @@ export const FinalCTASection: React.FC<FinalCTASectionProps> = ({ currentLanguag
                 <div className="text-base font-black text-white">{t.btnMain}</div>
                 <div className="text-xs text-blue-100 font-mono font-bold">{WHATSAPP_NUMBER}</div>
               </div>
-              <ArrowUpRight className="w-6 h-6 text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform ml-2" />
+              <ArrowUpRight className="w-5 h-5 text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform ml-1" />
             </div>
           </a>
 
-          <div className="flex items-center gap-4 text-xs text-slate-500 font-medium pt-2">
+        </div>
+
+          <div className="flex items-center justify-center gap-4 text-xs text-slate-500 font-medium pt-2">
             <span className="flex items-center gap-1.5 font-bold text-slate-700">
               <Clock className="w-3.5 h-3.5 text-emerald-600" />
               {t.responseTime}
@@ -108,7 +131,6 @@ export const FinalCTASection: React.FC<FinalCTASectionProps> = ({ currentLanguag
               {t.noPushySales}
             </span>
           </div>
-        </div>
 
       </div>
     </section>

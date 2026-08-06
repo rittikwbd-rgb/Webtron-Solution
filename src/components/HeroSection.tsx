@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { MessageSquare, ArrowUpRight, CheckCircle2, Star, Zap, ShieldCheck, TrendingUp, Sparkles, MapPin, Eye, MousePointer } from 'lucide-react';
+import { MessageSquare, ArrowUpRight, CheckCircle2, Star, Zap, ShieldCheck, TrendingUp, Sparkles, MapPin, Eye, MousePointer, Calendar } from 'lucide-react';
 import { WHATSAPP_LINK, WHATSAPP_NUMBER, FEATURED_PROJECTS } from '../data/agencyData';
 import { TargetRegion, AppLanguage } from '../types';
 import { translations } from '../data/translations';
@@ -8,10 +8,11 @@ import { translations } from '../data/translations';
 interface HeroSectionProps {
   currentRegion: TargetRegion;
   onOpenCalculator: () => void;
+  onOpenCalendar?: () => void;
   currentLanguage?: AppLanguage;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ currentRegion, onOpenCalculator, currentLanguage = 'EN' }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ currentRegion, onOpenCalculator, onOpenCalendar, currentLanguage = 'EN' }) => {
   const t = translations[currentLanguage]?.hero || translations.EN.hero;
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [activeProjectIdx, setActiveProjectIdx] = useState<number>(1); // Default to index 1 (VK Constructions) or index 2 (Max Pet Corner)
@@ -130,7 +131,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ currentRegion, onOpenC
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2"
+              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2"
             >
               {/* PRIMARY CTA: Chat on WhatsApp */}
               <a
@@ -138,33 +139,48 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ currentRegion, onOpenC
                 target="_blank"
                 rel="noopener noreferrer"
                 id="hero-primary-cta-whatsapp"
-                className="w-full sm:w-auto group relative px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl overflow-hidden shadow-lg shadow-blue-500/20 flex items-center justify-center gap-3 font-extrabold text-base hover:scale-[1.02] active:scale-95 transition-all"
+                className="w-full sm:w-auto group relative px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl overflow-hidden shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2.5 font-extrabold text-sm hover:scale-[1.02] active:scale-95 transition-all"
               >
-                <MessageSquare className="w-5 h-5 fill-current text-white relative z-10" />
-                <span className="relative z-10 text-white flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 fill-current text-white relative z-10" />
+                <span className="relative z-10 text-white flex items-center gap-1.5">
                   {t.ctaWhatsapp}
-                  <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
               </a>
 
-              {/* SECONDARY CTA: Explore Our Work */}
+              {/* SECONDARY EMBEDDED CALENDAR CTA */}
+              {onOpenCalendar && (
+                <button
+                  type="button"
+                  onClick={onOpenCalendar}
+                  id="hero-cta-calendar"
+                  className="w-full sm:w-auto px-6 py-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-extrabold text-sm transition-all flex items-center justify-center gap-2 shadow-md hover:scale-[1.02] active:scale-95"
+                >
+                  <Calendar className="w-4 h-4 text-blue-400" />
+                  <span>Book Strategy Call</span>
+                </button>
+              )}
+
+              {/* TERTIARY CTA: Explore Our Work */}
               <a
                 href="#portfolio"
-                className="w-full sm:w-auto px-8 py-4 bg-white border border-slate-200/90 hover:border-slate-300 text-slate-800 rounded-xl font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-2 shadow-sm"
+                className="w-full sm:w-auto px-5 py-3.5 bg-white border border-slate-200/90 hover:border-slate-300 text-slate-800 rounded-xl font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-2 shadow-sm text-xs sm:text-sm"
               >
                 <Eye className="w-4 h-4 text-blue-600" />
                 <span>{t.ctaWork}</span>
               </a>
+            </motion.div>
 
-              {/* Free Website & Marketing Audit button */}
+            {/* Free Website & Marketing Audit button */}
+            <div className="pt-2 text-center lg:text-left">
               <button
                 type="button"
                 onClick={onOpenCalculator}
-                className="text-xs text-blue-600 hover:text-blue-800 underline underline-offset-4 font-bold transition-colors py-2"
+                className="text-xs text-blue-600 hover:text-blue-800 underline underline-offset-4 font-bold transition-colors py-1 inline-flex items-center gap-1"
               >
-                {t.ctaAudit}
+                <span>📊 {t.ctaAudit}</span>
               </button>
-            </motion.div>
+            </div>
 
             {/* Trust Badges Bar */}
             <motion.div
@@ -276,12 +292,21 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ currentRegion, onOpenC
                 </div>
 
                 {/* Project Image Banner */}
-                <div className="relative aspect-video rounded-2xl overflow-hidden border border-slate-200/80 group-hover:scale-[1.02] transition-transform duration-500">
+                <div className="relative aspect-video rounded-2xl overflow-hidden border border-slate-200/80 group-hover:scale-[1.02] transition-transform duration-500 bg-slate-900">
                   <img
                     src={currentProject.image}
                     alt={currentProject.title}
                     className="w-full h-full object-cover"
+                    loading="eager"
+                    decoding="async"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      target.onerror = null;
+                      target.src = activeProjectIdx === 1
+                        ? 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80'
+                        : 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80';
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
                   <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs font-bold text-white">

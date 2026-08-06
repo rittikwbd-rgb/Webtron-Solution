@@ -15,12 +15,14 @@ import { FinalCTASection } from './components/FinalCTASection';
 import { FooterSection } from './components/FooterSection';
 import { StickyWhatsAppCTA } from './components/StickyWhatsAppCTA';
 import { InteractiveGrowthCalculatorModal } from './components/InteractiveGrowthCalculatorModal';
+import { EmbeddedCalendarModal } from './components/EmbeddedCalendarModal';
 import { TargetRegion, AppLanguage } from './types';
 
 export default function App() {
   const [currentRegion, setCurrentRegion] = useState<TargetRegion>('US');
   const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>('EN');
   const [calculatorOpen, setCalculatorOpen] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-600 selection:text-white antialiased">
@@ -35,6 +37,7 @@ export default function App() {
         currentLanguage={currentLanguage}
         onLanguageChange={setCurrentLanguage}
         onOpenCalculator={() => setCalculatorOpen(true)}
+        onOpenCalendar={() => setCalendarOpen(true)}
       />
 
       {/* 3. Main Landing Sections */}
@@ -44,6 +47,7 @@ export default function App() {
           currentRegion={currentRegion}
           currentLanguage={currentLanguage}
           onOpenCalculator={() => setCalculatorOpen(true)}
+          onOpenCalendar={() => setCalendarOpen(true)}
         />
 
         {/* SECTION 2: Development Process (From Concept To Market Dominance) */}
@@ -72,14 +76,14 @@ export default function App() {
         <FAQSection currentLanguage={currentLanguage} />
 
         {/* SECTION 10: Final CTA */}
-        <FinalCTASection currentLanguage={currentLanguage} />
+        <FinalCTASection currentLanguage={currentLanguage} onOpenCalendar={() => setCalendarOpen(true)} />
       </main>
 
       {/* 4. Agency Footer */}
       <FooterSection currentLanguage={currentLanguage} />
 
       {/* 5. Sticky WhatsApp Floating Action Button */}
-      <StickyWhatsAppCTA currentLanguage={currentLanguage} />
+      <StickyWhatsAppCTA currentLanguage={currentLanguage} onOpenCalendar={() => setCalendarOpen(true)} />
 
       {/* 6. Interactive ROI Growth Calculator Modal */}
       <InteractiveGrowthCalculatorModal
@@ -89,6 +93,15 @@ export default function App() {
         currentLanguage={currentLanguage}
       />
 
+      {/* 7. Embedded Direct Calendar Booking Modal */}
+      <EmbeddedCalendarModal
+        isOpen={calendarOpen}
+        onClose={() => setCalendarOpen(false)}
+        currentRegion={currentRegion}
+        currentLanguage={currentLanguage}
+      />
+
     </div>
   );
 }
+

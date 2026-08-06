@@ -56,7 +56,20 @@ export const FeaturedPortfolioSection: React.FC<FeaturedPortfolioSectionProps> =
                     src={project.image}
                     alt={`${project.title} Website Showcase`}
                     className="w-full h-72 sm:h-80 object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                    loading="lazy"
+                    decoding="async"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      target.onerror = null;
+                      if (project.id === 'terra-nova-medical') {
+                        target.src = 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80';
+                      } else if (project.id === 'vk-constructions') {
+                        target.src = 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80';
+                      } else {
+                        target.src = 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80';
+                      }
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
 
