@@ -127,7 +127,14 @@ const TIMEZONE_IANA: Record<string, string> = {
 
 // Convert Date string + Time string + Timezone into ISO Date range
 function parseDateTimeRange(dateStr: string, timeStr: string, timezoneCode: string, durationMinutes: number) {
-  const timeIana = TIMEZONE_IANA[timezoneCode] || 'America/New_York';
+  let timeIana = 'America/New_York';
+  if (timezoneCode) {
+    if (timezoneCode.includes('/') || timezoneCode.includes('_') || timezoneCode === 'UTC') {
+      timeIana = timezoneCode;
+    } else if (TIMEZONE_IANA[timezoneCode]) {
+      timeIana = TIMEZONE_IANA[timezoneCode];
+    }
+  }
   
   // timeStr is like "10:30 AM" or "02:30 PM"
   const match = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
@@ -142,23 +149,25 @@ function parseDateTimeRange(dateStr: string, timeStr: string, timezoneCode: stri
     if (ampm === 'AM' && hours === 12) hours = 0;
   }
 
-  // Build local date time string YYYY-MM-DDTHH:MM:00
   const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
-  const [yearStr, monthStr, dayStr] = dateStr.split('-');
+  const parts = dateStr.split('-');
+  const yearStr = parts[0];
+  const monthStr = parts[1] || '01';
+  const dayStr = parts[2] || '01';
   
   const startLocalStr = `${yearStr}-${pad(parseInt(monthStr, 10))}-${pad(parseInt(dayStr, 10))}T${pad(hours)}:${pad(minutes)}:00`;
   
-  // Calculate end time
-  const startDate = new Date(`${startLocalStr}`);
-  const endDate = new Date(startDate.getTime() + durationMinutes * 60 * 1000);
+  // Calculate end local time
+  const totalStartMins = hours * 60 + minutes;
+  const totalEndMins = totalStartMins + durationMinutes;
+  const endHours = Math.floor(totalEndMins / 60) % 24;
+  const endMins = totalEndMins % 60;
   
-  const endHours = endDate.getHours();
-  const endMinutes = endDate.getMinutes();
-  const endLocalStr = `${yearStr}-${pad(parseInt(monthStr, 10))}-${pad(parseInt(dayStr, 10))}T${pad(endHours)}:${pad(endMinutes)}:00`;
+  const endLocalStr = `${yearStr}-${pad(parseInt(monthStr, 10))}-${pad(parseInt(dayStr, 10))}T${pad(endHours)}:${pad(endMins)}:00`;
 
   return {
-    startIso: startDate.toISOString(),
-    endIso: endDate.toISOString(),
+    startIso: startLocalStr,
+    endIso: endLocalStr,
     startLocalStr,
     endLocalStr,
     timeZoneIana: timeIana
@@ -329,10 +338,17 @@ app.post('/api/bookings', async (req, res) => {
   let calendarEventUrl: string | undefined = undefined;
   let calendarCreated = false;
   let emailInvitationSent = false;
+  let calendarError: string | null = null;
 
   const oauth2Client = getOAuth2Client(req);
 
-  if (oauth2Client && googleTokens) {
+  if (!process.env.OAUTH_CLIENT_ID || !process.env.OAUTH_CLIENT_SECRET) {
+    calendarError = 'Google OAuth credentials (OAUTH_CLIENT_ID / OAUTH_CLIENT_SECRET) are missing.';
+  } else if (!googleTokens) {
+    calendarError = 'Google Calendar is not connected to server. Host must click "Connect Google Calendar" in app settings.';
+  } else if (!oauth2Client) {
+    calendarError = 'Unable to initialize OAuth client.';
+  } else {
     try {
       const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
@@ -343,7 +359,7 @@ app.post('/api/bookings', async (req, res) => {
         sendUpdates: 'all', // Automatically sends calendar invitation email to attendees
         requestBody: {
           summary: `Strategy Call: ${fullName} (${company || 'Prospect'})`,
-          description: `🌟 Webtron Solution Strategy Call\n\n📌 Topic: ${topic}\n👤 Client Name: ${fullName}\n✉️ Email: ${email}\n📞 Phone: ${phone || 'Not provided'}\n🏢 Company/Website: ${company || 'N/A'}\n\n📝 Notes:\n${notes || 'None provided'}\n\n📞 Join Video Call via Google Meet link below.`,
+          description: `🌟 Webtron Solution Strategy Call\n\n📌 Topic: ${topic}\n👤 Client Name: ${fullName}\n✉️ Email: ${email}\n📞 Phone: ${phone || 'Not provided'}\n🏢 Website: ${company || 'N/A'}\n\n📝 Notes:\n${notes || 'None provided'}\n\n📞 Join Video Call via Google Meet link below.`,
           start: {
             dateTime: startIso,
             timeZone: timeZoneIana,
@@ -381,6 +397,7 @@ app.post('/api/bookings', async (req, res) => {
       emailInvitationSent = true;
     } catch (error: any) {
       console.error('Error creating Google Calendar event:', error?.message || error);
+      calendarError = error?.message || String(error);
     }
   }
 
@@ -416,6 +433,7 @@ app.post('/api/bookings', async (req, res) => {
     booking: newBooking,
     calendarCreated,
     emailInvitationSent,
+    calendarError,
     meetLink,
     calendarEventUrl
   });

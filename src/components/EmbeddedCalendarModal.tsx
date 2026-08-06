@@ -362,13 +362,13 @@ END:VCALENDAR`;
           </div>
 
           {/* Google Calendar Authorization Banner */}
-          {!oauthStatus.authenticated && oauthStatus.configured && (
+          {!oauthStatus.authenticated && (
             <div className="bg-amber-500/10 border-b border-amber-500/20 px-5 py-3 space-y-2 text-xs text-amber-900">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-2 font-medium">
                   <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
                   <span>
-                    <strong>Agency Admin:</strong> Connect your Google Calendar to sync calls automatically with Google Meet links.
+                    <strong>Host Action Required:</strong> Click <em>Connect Google Calendar</em> to enable direct Google Calendar sync & automated client email invitations.
                   </span>
                 </div>
                 <button
@@ -873,16 +873,59 @@ END:VCALENDAR`;
             {step === 'confirmed' && (
               <div className="text-center space-y-6 py-4 max-w-lg mx-auto">
                 
-                <div className="w-16 h-16 rounded-full bg-emerald-100 border-4 border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto animate-bounce">
-                  <CheckCircle2 className="w-8 h-8" />
-                </div>
+                {submissionResult?.calendarCreated ? (
+                  <div className="w-16 h-16 rounded-full bg-emerald-100 border-4 border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto animate-bounce">
+                    <CheckCircle2 className="w-8 h-8" />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-amber-100 border-4 border-amber-200 text-amber-600 flex items-center justify-center mx-auto">
+                    <AlertCircle className="w-8 h-8" />
+                  </div>
+                )}
 
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">Your Call Is Confirmed!</h3>
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">
+                    {submissionResult?.calendarCreated ? 'Your Call Is Confirmed & Synced!' : 'Call Request Saved Locally!'}
+                  </h3>
                   <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-                    Thank you, <strong className="text-slate-900">{fullName}</strong>! An automatic invitation email has been sent to <strong className="text-blue-600">{email}</strong> and added directly to the calendar.
+                    {submissionResult?.calendarCreated ? (
+                      <>
+                        Thank you, <strong className="text-slate-900">{fullName}</strong>! An automatic Google Calendar invite and email has been sent to <strong className="text-blue-600">{email}</strong>.
+                      </>
+                    ) : (
+                      <>
+                        Thank you, <strong className="text-slate-900">{fullName}</strong>! Your call is saved in agency records.
+                      </>
+                    )}
                   </p>
                 </div>
+
+                {/* Warning if Google Calendar was not connected by host */}
+                {!submissionResult?.calendarCreated && (
+                  <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-left space-y-3 text-xs text-amber-950">
+                    <div className="flex items-start gap-2.5 font-bold">
+                      <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="block text-amber-900 font-black text-sm mb-0.5">Host Notice: Google Calendar Not Connected</span>
+                        <p className="font-normal text-slate-700 leading-relaxed">
+                          Because the host Google account is not connected yet, an automated email invitation could not be sent directly by Google.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-2">
+                      <span className="text-[11px] font-semibold text-amber-900">Are you the Host/Admin? Connect now:</span>
+                      <button
+                        type="button"
+                        onClick={handleConnectGoogleCalendar}
+                        className="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all"
+                      >
+                        <LinkIcon className="w-3.5 h-3.5" />
+                        <span>Connect Google Calendar</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* 1-CLICK GOOGLE MEET JOIN BUTTON */}
                 {submissionResult?.meetLink && (
@@ -922,15 +965,27 @@ END:VCALENDAR`;
                   </div>
                   <div className="flex justify-between border-b border-slate-200/80 pb-2">
                     <span className="text-slate-500">Email Invitation:</span>
-                    <span className="text-emerald-700 font-bold flex items-center gap-1">
-                      <Check className="w-3.5 h-3.5" /> Sent to {email}
-                    </span>
+                    {submissionResult?.emailInvitationSent ? (
+                      <span className="text-emerald-700 font-bold flex items-center gap-1">
+                        <Check className="w-3.5 h-3.5" /> Sent to {email}
+                      </span>
+                    ) : (
+                      <span className="text-amber-700 font-bold flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5" /> Host Calendar Disconnected
+                      </span>
+                    )}
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Calendar Storage:</span>
-                    <span className="text-blue-700 font-extrabold flex items-center gap-1">
-                      <Database className="w-3.5 h-3.5" /> Preserved in Agency Storage & Google Calendar
-                    </span>
+                    {submissionResult?.calendarCreated ? (
+                      <span className="text-emerald-700 font-extrabold flex items-center gap-1">
+                        <Check className="w-3.5 h-3.5" /> Synced to Google Calendar
+                      </span>
+                    ) : (
+                      <span className="text-blue-700 font-extrabold flex items-center gap-1">
+                        <Database className="w-3.5 h-3.5" /> Saved in Stored Bookings
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -943,7 +998,7 @@ END:VCALENDAR`;
                     className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    <span>View in Google Calendar</span>
+                    <span>View / Add to Google Calendar</span>
                   </a>
 
                   <button
