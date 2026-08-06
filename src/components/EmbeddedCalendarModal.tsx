@@ -25,15 +25,135 @@ const getSystemTimezone = () => {
   }
 };
 
-// Available Time Slots during business hours
-const TIME_SLOTS = [
-  '09:00 AM',
-  '10:30 AM',
-  '01:00 PM',
-  '02:30 PM',
-  '04:00 PM',
-  '05:30 PM'
+// Common timezones list including auto-detected system timezone
+const POPULAR_TIMEZONES = [
+  'America/New_York',
+  'America/Chicago',
+  'America/Denver',
+  'America/Los_Angeles',
+  'Europe/London',
+  'Europe/Paris',
+  'Europe/Berlin',
+  'Asia/Kolkata',
+  'Asia/Dubai',
+  'Asia/Singapore',
+  'Australia/Sydney',
+  'UTC'
 ];
+
+// Generate available time slots based on agency IST Working Hours:
+// Mon-Fri: 4:00 PM - 7:00 PM IST & 11:00 PM - 1:30 AM IST (next morning)
+// Sat-Sun: 10:00 AM - 12:00 PM IST
+export function generateAvailableTimeSlots(selectedDate: Date | null, timezone: string, durationMins: number = 15): string[] {
+  if (!selectedDate) return [];
+
+  const targetYear = selectedDate.getFullYear();
+  const targetMonth = selectedDate.getMonth() + 1;
+  const targetDay = selectedDate.getDate();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const targetDateStr = `${targetYear}-${pad(targetMonth)}-${pad(targetDay)}`;
+
+  const IST_OFFSET_MS = (5 * 60 + 30) * 60 * 1000;
+  const baseUtc = Date.UTC(targetYear, targetMonth - 1, targetDay, 12, 0, 0);
+  const candidates: number[] = [];
+  const step = durationMins || 15;
+
+  for (let dayOffset = -2; dayOffset <= 2; dayOffset++) {
+    const candidateUtc = new Date(baseUtc + dayOffset * 86400000);
+    let dfIst: Intl.DateTimeFormat;
+    try {
+      dfIst = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short'
+      });
+    } catch (e) {
+      dfIst = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'UTC',
+        year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short'
+      });
+    }
+
+    const pIst: Record<string, string> = {};
+    dfIst.formatToParts(candidateUtc).forEach(pt => pIst[pt.type] = pt.value);
+    
+    const y = parseInt(pIst.year, 10);
+    const m = parseInt(pIst.month, 10);
+    const d = parseInt(pIst.day, 10);
+    const weekday = pIst.weekday; // Mon, Tue, Wed, Thu, Fri, Sat, Sun
+
+    const isWeekend = (weekday === 'Sat' || weekday === 'Sun');
+
+    if (!isWeekend) {
+      // Mon-Fri IST:
+      // Window 1: 16:00 to 19:00 IST (4:00 PM to 7:00 PM)
+      for (let minFromMidnight = 16 * 60; minFromMidnight <= 19 * 60 - step; minFromMidnight += step) {
+        const hr = Math.floor(minFromMidnight / 60);
+        const mn = minFromMidnight % 60;
+        candidates.push(Date.UTC(y, m - 1, d, hr, mn, 0) - IST_OFFSET_MS);
+      }
+      // Window 2: 23:00 IST to 01:30 IST next morning (11:00 PM to 1:30 AM)
+      for (let minFromMidnight = 23 * 60; minFromMidnight <= 24 * 60 - step; minFromMidnight += step) {
+        const hr = Math.floor(minFromMidnight / 60);
+        const mn = minFromMidnight % 60;
+        candidates.push(Date.UTC(y, m - 1, d, hr, mn, 0) - IST_OFFSET_MS);
+      }
+      for (let minFromMidnight = 0; minFromMidnight <= 1 * 60 + 30 - step; minFromMidnight += step) {
+        const hr = Math.floor(minFromMidnight / 60);
+        const mn = minFromMidnight % 60;
+        candidates.push(Date.UTC(y, m - 1, d, hr, mn, 0) - IST_OFFSET_MS);
+      }
+    } else {
+      // Sat-Sun IST:
+      // Window: 10:00 AM to 12:00 PM IST
+      for (let minFromMidnight = 10 * 60; minFromMidnight <= 12 * 60 - step; minFromMidnight += step) {
+        const hr = Math.floor(minFromMidnight / 60);
+        const mn = minFromMidnight % 60;
+        candidates.push(Date.UTC(y, m - 1, d, hr, mn, 0) - IST_OFFSET_MS);
+      }
+    }
+  }
+
+  const uniqueUtcs = Array.from(new Set(candidates)).sort((a, b) => a - b);
+  const resultSlots: string[] = [];
+
+  for (const utcMs of uniqueUtcs) {
+    const d = new Date(utcMs);
+    let dfDate: Intl.DateTimeFormat;
+    let dfTime: Intl.DateTimeFormat;
+    try {
+      dfDate = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        year: 'numeric', month: '2-digit', day: '2-digit'
+      });
+      dfTime = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        hour: '2-digit', minute: '2-digit', hour12: true
+      });
+    } catch (e) {
+      dfDate = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'UTC',
+        year: 'numeric', month: '2-digit', day: '2-digit'
+      });
+      dfTime = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'UTC',
+        hour: '2-digit', minute: '2-digit', hour12: true
+      });
+    }
+
+    const pDate: Record<string, string> = {};
+    dfDate.formatToParts(d).forEach(pt => pDate[pt.type] = pt.value);
+    const dateStr = `${pDate.year}-${pDate.month}-${pDate.day}`;
+    const timeStr = dfTime.format(d);
+
+    if (dateStr === targetDateStr) {
+      if (!resultSlots.includes(timeStr)) {
+        resultSlots.push(timeStr);
+      }
+    }
+  }
+
+  return resultSlots;
+}
 
 // Call Topics
 const CALL_TOPICS = [
@@ -204,13 +324,16 @@ export const EmbeddedCalendarModal: React.FC<EmbeddedCalendarModalProps> = ({
   };
 
   const handleDateClick = (d: number) => {
-    if (isPast(d) || isWeekend(d)) return;
+    if (isPast(d)) return;
     setSelectedDate(new Date(year, month, d));
   };
 
   const handleConfirmBooking = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName || !email || !selectedDate) return;
+    if (!fullName.trim() || !email.trim() || !phone.trim() || !selectedDate) {
+      alert('Please fill out all mandatory fields: Full Name, Work Email, and Phone / WhatsApp number.');
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -263,18 +386,72 @@ export const EmbeddedCalendarModal: React.FC<EmbeddedCalendarModalProps> = ({
     }
   };
 
+  // Helper to compute UTC Date range for selected local time & timezone
+  const getBookingUtcRange = () => {
+    if (!selectedDate) return null;
+    const y = selectedDate.getFullYear();
+    const m = selectedDate.getMonth() + 1;
+    const d = selectedDate.getDate();
+
+    const match = selectedTime.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    let hours = 10;
+    let minutes = 30;
+    if (match) {
+      hours = parseInt(match[1], 10);
+      minutes = parseInt(match[2], 10);
+      const ampm = match[3].toUpperCase();
+      if (ampm === 'PM' && hours < 12) hours += 12;
+      if (ampm === 'AM' && hours === 12) hours = 0;
+    }
+
+    const initialUtc = new Date(Date.UTC(y, m - 1, d, hours, minutes, 0));
+    const tz = selectedTimezone || 'UTC';
+    try {
+      const df = new Intl.DateTimeFormat('en-US', {
+        timeZone: tz,
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+      });
+      const p: Record<string, string> = {};
+      df.formatToParts(initialUtc).forEach(pt => p[pt.type] = pt.value);
+      let h = parseInt(p.hour || '0', 10);
+      if (h === 24) h = 0;
+      const partsMs = new Date(Date.UTC(
+        parseInt(p.year || String(y), 10),
+        parseInt(p.month || String(m), 10) - 1,
+        parseInt(p.day || String(d), 10),
+        h,
+        parseInt(p.minute || '0', 10),
+        parseInt(p.second || '0', 10)
+      )).getTime();
+      const diff = partsMs - initialUtc.getTime();
+      const startUtc = new Date(initialUtc.getTime() - diff);
+      const endUtc = new Date(startUtc.getTime() + (parseInt(callDuration, 10) || 15) * 60 * 1000);
+      return { startUtc, endUtc };
+    } catch (err) {
+      const endUtc = new Date(initialUtc.getTime() + (parseInt(callDuration, 10) || 15) * 60 * 1000);
+      return { startUtc: initialUtc, endUtc };
+    }
+  };
+
   // Google Calendar URL generator
   const getGoogleCalendarUrl = () => {
     if (!selectedDate) return '#';
-    const dateStr = selectedDate.toISOString().replace(/-|:|\.\d\d\d/g, '').substring(0, 8);
+    const range = getBookingUtcRange();
+    const formatIso = (d: Date) => d.toISOString().replace(/-|:|\.\d\d\d/g, '');
+    const datesParam = range ? `&dates=${formatIso(range.startUtc)}/${formatIso(range.endUtc)}` : '';
     const title = encodeURIComponent(`Strategy Call with Webtron Solution - ${fullName}`);
     const details = encodeURIComponent(`Discovery call with Webtron Solution team.\nTopic: ${selectedTopic}\nDuration: ${callDuration} mins\nClient Email: ${email}\nPhone: ${phone}\nNotes: ${notes}\nGoogle Meet Link: ${submissionResult?.meetLink || 'Included'}`);
     const location = encodeURIComponent(submissionResult?.meetLink || 'Google Meet Video Call');
-    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}`;
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}${datesParam}&ctz=${encodeURIComponent(selectedTimezone)}`;
   };
 
   const handleDownloadIcs = () => {
     if (!selectedDate) return;
+    const range = getBookingUtcRange();
+    const formatIso = (d: Date) => d.toISOString().replace(/-|:|\.\d\d\d/g, '');
+    const dtstart = range ? formatIso(range.startUtc) : '';
+    const dtend = range ? formatIso(range.endUtc) : '';
     const dateFormatted = selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
@@ -282,6 +459,8 @@ PRODID:-//Webtron Solution//Calendar Booking//EN
 BEGIN:VEVENT
 SUMMARY:Strategy Call with Webtron Solution
 DESCRIPTION:Topic: ${selectedTopic}\\nClient: ${fullName}\\nEmail: ${email}\\nPhone: ${phone}\\nGoogle Meet: ${submissionResult?.meetLink || ''}
+${dtstart ? `DTSTART:${dtstart}` : ''}
+${dtend ? `DTEND:${dtend}` : ''}
 LOCATION:${submissionResult?.meetLink || 'Google Meet Video Call'}
 STATUS:CONFIRMED
 END:VEVENT
@@ -317,149 +496,29 @@ END:VCALENDAR`;
         >
           
           {/* Header Bar */}
-          <div className="bg-slate-900 text-white p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800">
+          <div className="bg-slate-900 text-white p-5 sm:p-6 flex items-center justify-between gap-4 border-b border-slate-800">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
                 <Video className="w-5 h-5" />
               </div>
               <div>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-extrabold text-emerald-400 mb-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                  <span>Google Meet & Calendar Synchronized</span>
-                </div>
                 <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight">
                   Book a 1-on-1 Strategy Call
                 </h3>
+                <p className="text-xs text-slate-400 font-medium">
+                  Select your date, time & timezone to schedule a consultation with Webtron Solution
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 self-end sm:self-auto">
-              {/* Toggle to view stored bookings (Admin view) */}
-              <button
-                type="button"
-                onClick={() => {
-                  if (step === 'bookings_list') {
-                    setStep('select');
-                  } else {
-                    setStep('bookings_list');
-                    fetchBookingsList();
-                  }
-                }}
-                className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700 flex items-center gap-1.5 transition-colors"
-              >
-                <Database className="w-3.5 h-3.5 text-blue-400" />
-                <span>{step === 'bookings_list' ? 'Book Call' : 'Stored Bookings'}</span>
-              </button>
-
-              <button
-                onClick={onClose}
-                className="p-2.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-                aria-label="Close modal"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+            <button
+              onClick={onClose}
+              className="p-2.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors shrink-0"
+              aria-label="Close modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
-
-          {/* Google Calendar Authorization Banner */}
-          {!oauthStatus.authenticated && (
-            <div className="bg-amber-500/10 border-b border-amber-500/20 px-5 py-3 space-y-2 text-xs text-amber-900">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2 font-medium">
-                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span>
-                    <strong>Host Action Required:</strong> Click <em>Connect Google Calendar</em> to enable direct Google Calendar sync & automated client email invitations.
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleConnectGoogleCalendar}
-                  className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-extrabold shrink-0 shadow-xs flex items-center gap-1 transition-all"
-                >
-                  <LinkIcon className="w-3.5 h-3.5" />
-                  <span>Connect Google Calendar</span>
-                </button>
-              </div>
-
-              {(oauthStatus.redirectUri || oauthStatus.origin) && (
-                <div className="pt-2 border-t border-amber-500/20 space-y-2">
-                  {/* Authorized JavaScript origins */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[11px] text-slate-700">
-                    <span className="font-semibold text-amber-950">
-                      1. Authorized JavaScript origins:
-                    </span>
-                    <div className="flex items-center gap-2 bg-white/80 px-2.5 py-1 rounded-md border border-amber-300 font-mono text-[10px] select-all max-w-full overflow-x-auto">
-                      <span className="truncate">{oauthStatus.origin || 'https://ais-dev-war2e7jtggfzr5mag7aovd-484299554759.asia-southeast1.run.app'}</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const orig = oauthStatus.origin || 'https://ais-dev-war2e7jtggfzr5mag7aovd-484299554759.asia-southeast1.run.app';
-                          navigator.clipboard.writeText(orig);
-                          alert('JavaScript Origin copied to clipboard!');
-                        }}
-                        className="text-amber-800 font-bold hover:underline shrink-0 bg-amber-100 px-1.5 py-0.5 rounded"
-                      >
-                        Copy
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Authorized redirect URIs */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[11px] text-slate-700">
-                    <span className="font-semibold text-amber-950">
-                      2. Authorized redirect URIs:
-                    </span>
-                    <div className="flex items-center gap-2 bg-white/80 px-2.5 py-1 rounded-md border border-amber-300 font-mono text-[10px] select-all max-w-full overflow-x-auto">
-                      <span className="truncate">{oauthStatus.redirectUri}</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (oauthStatus.redirectUri) {
-                            navigator.clipboard.writeText(oauthStatus.redirectUri);
-                            alert('Redirect URI copied to clipboard!');
-                          }
-                        }}
-                        className="text-amber-800 font-bold hover:underline shrink-0 bg-amber-100 px-1.5 py-0.5 rounded"
-                      >
-                        Copy
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Troubleshooting Guide Box */}
-                  <details className="bg-amber-100/70 p-2.5 rounded-lg border border-amber-300 text-[11px] text-amber-950">
-                    <summary className="font-bold cursor-pointer text-amber-900 hover:underline flex items-center gap-1 select-none">
-                      🔍 Getting "Access blocked: This app's request is invalid"? Checklist
-                    </summary>
-                    <ol className="list-decimal list-inside space-y-1 mt-2 text-slate-800 font-normal">
-                      <li>
-                        <strong>Application Type:</strong> In Google Cloud Console Credentials, verify your Client ID type is <strong>Web application</strong>.
-                      </li>
-                      <li>
-                        <strong>Paste both URLs:</strong> Paste <em>Authorized JavaScript origins</em> (#1 above) AND <em>Authorized redirect URIs</em> (#2 above) into your Client ID settings and click <strong>SAVE</strong>.
-                      </li>
-                      <li>
-                        <strong>Test User added:</strong> In <em>OAuth consent screen &gt; Audience / Test users</em>, ensure your Google email is added.
-                      </li>
-                      <li>
-                        <strong>Wait 1-2 minutes:</strong> Google Cloud Console updates can take up to a minute to propagate worldwide.
-                      </li>
-                    </ol>
-                  </details>
-                </div>
-              )}
-            </div>
-          )}
-
-          {oauthStatus.authenticated && (
-            <div className="bg-emerald-500/10 border-b border-emerald-500/20 px-5 py-2 flex items-center justify-between text-xs text-emerald-900 font-bold">
-              <span className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                Google Calendar Connected ({oauthStatus.calendarInfo?.summary || 'Primary Calendar'})
-              </span>
-              <span className="text-[11px] text-emerald-700 font-extrabold">Instant Meet Link & Email Invites Enabled</span>
-            </div>
-          )}
 
           {/* Modal Body */}
           <div className="p-5 sm:p-6 md:p-8 max-h-[75vh] overflow-y-auto">

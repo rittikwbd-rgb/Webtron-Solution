@@ -15,7 +15,7 @@ interface HeroSectionProps {
 export const HeroSection: React.FC<HeroSectionProps> = ({ currentRegion, onOpenCalculator, onOpenCalendar, currentLanguage = 'EN' }) => {
   const t = translations[currentLanguage]?.hero || translations.EN.hero;
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [activeProjectIdx, setActiveProjectIdx] = useState<number>(1); // Default to index 1 (VK Constructions) or index 2 (Max Pet Corner)
+  const [activeProjectIdx, setActiveProjectIdx] = useState<number>(1); // Default to index 1 (VVK Constructions) or index 2 (Max Pet Corner)
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -277,7 +277,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ currentRegion, onOpenC
                         activeProjectIdx === 1 ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-900'
                       }`}
                     >
-                      VK Const.
+                      VVK Const.
                     </button>
                     <button
                       type="button"

@@ -119,20 +119,33 @@ function getOAuth2Client(req?: express.Request) {
 // Timezone offset mapping helper
 const TIMEZONE_IANA: Record<string, string> = {
   EST: 'America/New_York',
+  EDT: 'America/New_York',
+  CST: 'America/Chicago',
+  CDT: 'America/Chicago',
+  MST: 'America/Denver',
+  MDT: 'America/Denver',
   PST: 'America/Los_Angeles',
+  PDT: 'America/Los_Angeles',
   GMT: 'Europe/London',
+  BST: 'Europe/London',
   CET: 'Europe/Berlin',
+  CEST: 'Europe/Berlin',
+  IST: 'Asia/Kolkata',
   GST: 'Asia/Dubai',
+  SGT: 'Asia/Singapore',
+  AEST: 'Australia/Sydney',
+  AEDT: 'Australia/Sydney',
+  UTC: 'UTC',
 };
 
-// Convert Date string + Time string + Timezone into ISO Date range
+// Convert Date string + Time string + Timezone into accurate ISO Date range for Google Calendar API
 function parseDateTimeRange(dateStr: string, timeStr: string, timezoneCode: string, durationMinutes: number) {
   let timeIana = 'America/New_York';
   if (timezoneCode) {
     if (timezoneCode.includes('/') || timezoneCode.includes('_') || timezoneCode === 'UTC') {
       timeIana = timezoneCode;
-    } else if (TIMEZONE_IANA[timezoneCode]) {
-      timeIana = TIMEZONE_IANA[timezoneCode];
+    } else if (TIMEZONE_IANA[timezoneCode.toUpperCase()]) {
+      timeIana = TIMEZONE_IANA[timezoneCode.toUpperCase()];
     }
   }
   
@@ -149,27 +162,53 @@ function parseDateTimeRange(dateStr: string, timeStr: string, timezoneCode: stri
     if (ampm === 'AM' && hours === 12) hours = 0;
   }
 
-  const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
   const parts = dateStr.split('-');
-  const yearStr = parts[0];
-  const monthStr = parts[1] || '01';
-  const dayStr = parts[2] || '01';
-  
-  const startLocalStr = `${yearStr}-${pad(parseInt(monthStr, 10))}-${pad(parseInt(dayStr, 10))}T${pad(hours)}:${pad(minutes)}:00`;
-  
-  // Calculate end local time
-  const totalStartMins = hours * 60 + minutes;
-  const totalEndMins = totalStartMins + durationMinutes;
-  const endHours = Math.floor(totalEndMins / 60) % 24;
-  const endMins = totalEndMins % 60;
-  
-  const endLocalStr = `${yearStr}-${pad(parseInt(monthStr, 10))}-${pad(parseInt(dayStr, 10))}T${pad(endHours)}:${pad(endMins)}:00`;
+  const y = parseInt(parts[0], 10) || 2026;
+  const m = parseInt(parts[1] || '1', 10);
+  const d = parseInt(parts[2] || '1', 10);
+
+  // Calculate the exact UTC Date object corresponding to (year, month, day, hr, min) in `timeIana`
+  const getUtcDateInZone = (year: number, month: number, day: number, hr: number, min: number, tz: string) => {
+    const initialUtcGuess = new Date(Date.UTC(year, month - 1, day, hr, min, 0));
+    const getPartsInTz = (dateObj: Date) => {
+      let df: Intl.DateTimeFormat;
+      try {
+        df = new Intl.DateTimeFormat('en-US', {
+          timeZone: tz,
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+        });
+      } catch (e) {
+        df = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'UTC',
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+        });
+      }
+      const p: Record<string, string> = {};
+      df.formatToParts(dateObj).forEach(pt => p[pt.type] = pt.value);
+      let h = parseInt(p.hour || '0', 10);
+      if (h === 24) h = 0;
+      return new Date(Date.UTC(
+        parseInt(p.year || String(year), 10),
+        parseInt(p.month || String(month), 10) - 1,
+        parseInt(p.day || String(day), 10),
+        h,
+        parseInt(p.minute || '0', 10),
+        parseInt(p.second || '0', 10)
+      )).getTime();
+    };
+
+    const diff = getPartsInTz(initialUtcGuess) - initialUtcGuess.getTime();
+    return new Date(initialUtcGuess.getTime() - diff);
+  };
+
+  const startUtc = getUtcDateInZone(y, m, d, hours, minutes, timeIana);
+  const endUtc = new Date(startUtc.getTime() + (durationMinutes || 15) * 60 * 1000);
 
   return {
-    startIso: startLocalStr,
-    endIso: endLocalStr,
-    startLocalStr,
-    endLocalStr,
+    startIso: startUtc.toISOString(),
+    endIso: endUtc.toISOString(),
     timeZoneIana: timeIana
   };
 }
@@ -199,7 +238,19 @@ app.get('/api/oauth/google/status', async (req, res) => {
         timeZone: primary.data.timeZone
       };
     } catch (err: any) {
-      console.error('Error fetching calendar info:', err?.message || err);
+      if (err?.message?.includes('insufficient authentication scopes') || err?.code === 403) {
+        // Soft fallback if existing token scope is event-only
+        calendarInfo = {
+          summary: 'Google Calendar (Connected)',
+          timeZone: 'UTC'
+        };
+      } else {
+        console.error('Error fetching calendar info:', err?.message || err);
+        calendarInfo = {
+          summary: 'Google Calendar (Connected)',
+          timeZone: 'UTC'
+        };
+      }
     }
   }
 
@@ -233,7 +284,11 @@ app.get('/api/oauth/google/url', (req, res) => {
 
   const url = oauth2Client.generateAuthUrl({
     access_type: 'offline',
-    scope: ['https://www.googleapis.com/auth/calendar.events'],
+    scope: [
+      'https://www.googleapis.com/auth/calendar',
+      'https://www.googleapis.com/auth/calendar.events',
+      'https://www.googleapis.com/auth/calendar.readonly'
+    ],
     prompt: 'consent'
   });
 

@@ -145,8 +145,8 @@ export const FEATURED_PROJECTS: Project[] = [
     location: 'Vancouver, NA / US Region'
   },
   {
-    id: 'vk-constructions',
-    title: 'VK Constructions',
+    id: 'vvk-constructions',
+    title: 'VVK Constructions',
     url: 'https://vkconstructions.netlify.app/',
     industry: 'Commercial Construction & Architecture',
     servicesProvided: ['Custom Website Development', 'Interactive 3D Portfolio Showcase', 'Technical SEO', 'Lead Generation Engine'],
@@ -163,7 +163,7 @@ export const FEATURED_PROJECTS: Project[] = [
   {
     id: 'max-pet-corner',
     title: 'Max Pet Corner',
-    url: 'https://maxpetcorner.netlify.app/',
+    url: 'https://maxpetcornerus.netlify.app/',
     industry: 'E-commerce & Luxury Pet Care',
     servicesProvided: ['E-commerce Web Development', 'UI/UX Design', 'Conversion Rate Optimization', 'Social Media Ad Integration'],
     techStack: ['React', 'Tailwind CSS', 'Mobile First PWA', 'Schema Markup', 'Analytics'],
