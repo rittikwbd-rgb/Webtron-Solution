@@ -210,6 +210,16 @@ export const EmbeddedCalendarModal: React.FC<EmbeddedCalendarModalProps> = ({
   const [bookingsList, setBookingsList] = useState<any[]>([]);
   const [loadingBookings, setLoadingBookings] = useState(false);
 
+  // Auto-update selected time slot when date, timezone, or call duration changes
+  useEffect(() => {
+    if (selectedDate) {
+      const slots = generateAvailableTimeSlots(selectedDate, selectedTimezone, parseInt(callDuration, 10));
+      if (slots.length > 0 && !slots.includes(selectedTime)) {
+        setSelectedTime(slots[0]);
+      }
+    }
+  }, [selectedDate, selectedTimezone, callDuration]);
+
   // Check Google OAuth status on mount or modal open
   useEffect(() => {
     if (isOpen) {
@@ -283,6 +293,9 @@ export const EmbeddedCalendarModal: React.FC<EmbeddedCalendarModalProps> = ({
   };
 
   if (!isOpen) return null;
+
+  // Compute time slots based on selected date, timezone & duration
+  const availableSlots = generateAvailableTimeSlots(selectedDate, selectedTimezone, parseInt(callDuration, 10));
 
   // Calendar Helpers
   const year = currentDate.getFullYear();
@@ -738,21 +751,27 @@ END:VCALENDAR`;
                       </h4>
 
                       <div className="grid grid-cols-2 gap-2">
-                        {TIME_SLOTS.map(time => (
-                          <button
-                            key={time}
-                            type="button"
-                            onClick={() => setSelectedTime(time)}
-                            className={`py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all border text-center flex items-center justify-center gap-1.5 ${
-                              selectedTime === time
-                                ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20'
-                                : 'bg-white text-slate-700 border-slate-200 hover:border-blue-400 hover:bg-slate-50'
-                            }`}
-                          >
-                            <Clock className="w-3.5 h-3.5 opacity-70" />
-                            <span>{time}</span>
-                          </button>
-                        ))}
+                        {availableSlots.length > 0 ? (
+                          availableSlots.map(time => (
+                            <button
+                              key={time}
+                              type="button"
+                              onClick={() => setSelectedTime(time)}
+                              className={`py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all border text-center flex items-center justify-center gap-1.5 ${
+                                selectedTime === time
+                                  ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20'
+                                  : 'bg-white text-slate-700 border-slate-200 hover:border-blue-400 hover:bg-slate-50'
+                              }`}
+                            >
+                              <Clock className="w-3.5 h-3.5 opacity-70" />
+                              <span>{time}</span>
+                            </button>
+                          ))
+                        ) : (
+                          <div className="col-span-2 text-center py-4 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500">
+                            No available slots for this date in the selected timezone during agency working hours.
+                          </div>
+                        )}
                       </div>
                     </div>
 
