@@ -396,6 +396,23 @@ export const EmbeddedCalendarModal: React.FC<EmbeddedCalendarModalProps> = ({
     } finally {
       setIsSubmitting(false);
       setStep('confirmed');
+
+      // Construct thank-you page URL with query parameters for Meta Ads conversion tracking
+      const finalMeet = submissionResult?.meetLink || `https://meet.google.com/lookup/webtron-${Date.now().toString().substring(6)}`;
+      const queryParams = new URLSearchParams({
+        name: fullName,
+        email: email,
+        phone: phone,
+        date: formattedDateStr,
+        time: selectedTime,
+        tz: selectedTimezone,
+        meet: finalMeet
+      }).toString();
+
+      // Redirect user to the /thank-you page slug for Meta Pixel & Ads account conversion
+      window.history.pushState({}, '', `/thank-you?${queryParams}`);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      onClose();
     }
   };
 
@@ -618,7 +635,7 @@ END:VCALENDAR`;
                         <CalendarIcon className="w-4 h-4 text-blue-600" />
                         1. Select Date & Call Duration
                       </h4>
-                      <p className="text-xs text-slate-500 font-medium">Working Hours: Mon–Sat • 09:00 AM – 06:00 PM</p>
+                      <p className="text-xs text-slate-500 font-medium">Agency Hours (IST): Mon–Fri: 4–7 PM & 11 PM–1:30 AM | Sat–Sun: 10 AM–12 PM</p>
                     </div>
 
                     {/* Duration Toggle */}
@@ -688,7 +705,7 @@ END:VCALENDAR`;
                         const isWeekendDate = isWeekend(dayNum);
                         const isSelected = selectedDate && selectedDate.getDate() === dayNum && selectedDate.getMonth() === month && selectedDate.getFullYear() === year;
 
-                        const isDisabled = isPastDate || isWeekendDate;
+                        const isDisabled = isPastDate;
 
                         return (
                           <button
@@ -731,16 +748,30 @@ END:VCALENDAR`;
                   
                   <div className="space-y-5">
                     
-                    {/* Detected Timezone Indicator */}
-                    <div className="p-3.5 rounded-2xl bg-blue-50/70 border border-blue-200/80 flex items-center justify-between text-xs font-semibold text-slate-800">
-                      <div className="flex items-center gap-2.5">
-                        <Globe className="w-4 h-4 text-blue-600 shrink-0" />
-                        <div>
-                          <span className="text-[10px] uppercase font-extrabold text-slate-500 block leading-tight">Detected Timezone</span>
-                          <strong className="text-slate-900 font-extrabold text-xs">{selectedTimezone}</strong>
-                        </div>
+                    {/* Timezone Selection & Auto-Detection */}
+                    <div className="p-3.5 rounded-2xl bg-blue-50/70 border border-blue-200/80 space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5 font-extrabold text-slate-800">
+                          <Globe className="w-4 h-4 text-blue-600" />
+                          <span>Your Timezone</span>
+                        </span>
+                        {selectedTimezone === getSystemTimezone() && (
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-extrabold">
+                            Auto-detected
+                          </span>
+                        )}
                       </div>
-                      <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-extrabold">Auto-detected</span>
+                      <select
+                        value={selectedTimezone}
+                        onChange={(e) => setSelectedTimezone(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-extrabold text-slate-800 focus:outline-none focus:border-blue-500 shadow-xs"
+                      >
+                        {Array.from(new Set([getSystemTimezone(), ...POPULAR_TIMEZONES])).map(tz => (
+                          <option key={tz} value={tz}>
+                            {tz} {tz === getSystemTimezone() ? '(Detected System Location)' : ''}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     {/* Time Slots */}
@@ -874,11 +905,12 @@ END:VCALENDAR`;
 
                   <div>
                     <label className="text-xs font-extrabold text-slate-700 block mb-1 flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5 text-slate-400" /> Phone / WhatsApp
+                      <Phone className="w-3.5 h-3.5 text-blue-600" /> Phone / WhatsApp Number *
                     </label>
                     <input
                       type="tel"
-                      placeholder="+1 (555) 000-0000"
+                      required
+                      placeholder="+1 (555) 000-0000 or +91 98765 43210"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold focus:outline-none focus:border-blue-500"

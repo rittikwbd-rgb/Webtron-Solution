@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SEOHead } from './components/SEOHead';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
@@ -16,6 +16,7 @@ import { FooterSection } from './components/FooterSection';
 import { StickyWhatsAppCTA } from './components/StickyWhatsAppCTA';
 import { InteractiveGrowthCalculatorModal } from './components/InteractiveGrowthCalculatorModal';
 import { EmbeddedCalendarModal } from './components/EmbeddedCalendarModal';
+import { ThankYouPage } from './components/ThankYouPage';
 import { TargetRegion, AppLanguage } from './types';
 
 export default function App() {
@@ -23,6 +24,27 @@ export default function App() {
   const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>('EN');
   const [calculatorOpen, setCalculatorOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [currentPath, setCurrentPath] = useState(() => window.location.pathname);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  if (currentPath === '/thank-you' || currentPath.startsWith('/thank-you/')) {
+    return (
+      <ThankYouPage
+        onBackToHome={() => {
+          window.history.pushState({}, '', '/');
+          setCurrentPath('/');
+        }}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-600 selection:text-white antialiased">
