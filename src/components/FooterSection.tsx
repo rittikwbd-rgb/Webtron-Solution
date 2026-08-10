@@ -56,6 +56,8 @@ export const FooterSection: React.FC<FooterSectionProps> = ({ currentLanguage = 
               <li><a href="#services" className="hover:text-blue-600 transition-colors">{t.links.services}</a></li>
               <li><a href="#why-choose-us" className="hover:text-blue-600 transition-colors">{t.links.whyUs}</a></li>
               <li><a href="#business-growth" className="hover:text-blue-600 transition-colors">{t.links.growth}</a></li>
+              <li><a href="/free-website-audit" className="text-blue-600 font-bold hover:underline">Free Website & Speed Audit</a></li>
+              <li><a href="/thank-you" className="hover:text-blue-600 transition-colors">Meta Ads Thank You Page (/thank-you)</a></li>
               <li><a href="#faq" className="hover:text-blue-600 transition-colors">{t.links.faq}</a></li>
             </ul>
           </div>

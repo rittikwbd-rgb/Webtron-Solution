@@ -140,6 +140,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { name: t.whyUs, href: '#why-choose-us' },
     { name: t.growthRoi, href: '#business-growth' },
     { name: t.faq, href: '#faq' },
+    { name: 'Free Audit', href: '/free-website-audit' },
   ];
 
   return (

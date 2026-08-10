@@ -17,6 +17,7 @@ import { StickyWhatsAppCTA } from './components/StickyWhatsAppCTA';
 import { InteractiveGrowthCalculatorModal } from './components/InteractiveGrowthCalculatorModal';
 import { EmbeddedCalendarModal } from './components/EmbeddedCalendarModal';
 import { ThankYouPage } from './components/ThankYouPage';
+import { FreeAuditPage } from './components/FreeAuditPage';
 import { TargetRegion, AppLanguage } from './types';
 
 export default function App() {
@@ -35,13 +36,39 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  if (currentPath === '/thank-you' || currentPath.startsWith('/thank-you/')) {
+  const normalizedPath = currentPath.toLowerCase().replace(/\/+$/, '') || '/';
+
+  // Route: Thank You Page for Meta Ads Conversions
+  if (
+    normalizedPath === '/thank-you' ||
+    normalizedPath === '/thankyou' ||
+    normalizedPath === '/thank-you.html' ||
+    normalizedPath.startsWith('/thank-you/')
+  ) {
     return (
       <ThankYouPage
         onBackToHome={() => {
           window.history.pushState({}, '', '/');
           setCurrentPath('/');
         }}
+      />
+    );
+  }
+
+  // Route: Dedicated Free Website & Growth Audit Landing Page
+  if (
+    normalizedPath === '/free-website-audit' ||
+    normalizedPath === '/free-audit' ||
+    normalizedPath === '/audit' ||
+    normalizedPath.startsWith('/free-website-audit/')
+  ) {
+    return (
+      <FreeAuditPage
+        onBackToHome={() => {
+          window.history.pushState({}, '', '/');
+          setCurrentPath('/');
+        }}
+        onOpenCalendar={() => setCalendarOpen(true)}
       />
     );
   }
