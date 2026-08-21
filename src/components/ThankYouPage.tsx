@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { CheckCircle2, Calendar, Clock, Video, Mail, ArrowLeft, MessageSquare, ShieldCheck, Sparkles, Globe } from 'lucide-react';
+import { CheckCircle2, Calendar, Clock, Video, Mail, ArrowLeft, MessageSquare, ShieldCheck, Sparkles, Globe, Search, Briefcase } from 'lucide-react';
+import { WHATSAPP_LINK } from '../data/agencyData';
 
 interface ThankYouPageProps {
   onBackToHome?: () => void;
@@ -38,14 +39,25 @@ export function ThankYouPage({ onBackToHome }: ThankYouPageProps) {
     }
   }, []);
 
-  const handleGoHome = () => {
+  const handleGoHome = (sectionHash?: string) => {
     if (onBackToHome) {
       onBackToHome();
+      if (sectionHash) {
+        setTimeout(() => {
+          window.location.hash = sectionHash;
+        }, 100);
+      }
     } else {
-      window.history.pushState({}, '', '/');
-      window.dispatchEvent(new PopStateEvent('popstate'));
+      window.location.href = sectionHash ? `/${sectionHash}` : '/';
     }
   };
+
+  const handleGoAudit = () => {
+    window.history.pushState({}, '', '/free-website-audit');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+
+  const whatsappMessage = `${WHATSAPP_LINK}?text=${encodeURIComponent(`Hi Webtron Solution! I just scheduled a strategy call for ${date || 'upcoming date'} ${time ? '@ ' + time : ''}. My name is ${name}.`)}`;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-blue-600 selection:text-white">
@@ -54,13 +66,22 @@ export function ThankYouPage({ onBackToHome }: ThankYouPageProps) {
       <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50 px-4 py-4 sm:px-8">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <button
-            onClick={handleGoHome}
-            className="flex items-center gap-2 text-slate-300 hover:text-white font-bold text-sm transition-colors group"
+            onClick={() => handleGoHome()}
+            className="flex items-center gap-3 text-slate-300 hover:text-white font-bold text-sm transition-colors group"
           >
             <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center group-hover:bg-blue-600 transition-colors">
               <ArrowLeft className="w-4 h-4" />
             </div>
-            <span>Back to Webtron Solution</span>
+            <div className="flex items-center gap-2">
+              <img
+                src="/logo.png"
+                alt="Webtron Solution Logo"
+                className="w-7 h-7 object-contain rounded-lg bg-white p-0.5 shadow-sm"
+                width={28}
+                height={28}
+              />
+              <span className="font-extrabold uppercase tracking-tight text-white hidden sm:inline">Webtron<span className="text-blue-400"> Solution</span></span>
+            </div>
           </button>
 
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">
@@ -103,53 +124,45 @@ export function ThankYouPage({ onBackToHome }: ThankYouPageProps) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             
-            {date && (
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-blue-400 shrink-0">
-                  <Calendar className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Scheduled Date</div>
-                  <div className="text-base font-extrabold text-white mt-0.5">{date}</div>
-                </div>
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-blue-400 shrink-0">
+                <Calendar className="w-5 h-5" />
               </div>
-            )}
+              <div>
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Scheduled Date</div>
+                <div className="text-base font-extrabold text-white mt-0.5">{date || 'Confirmed in Calendar'}</div>
+              </div>
+            </div>
 
-            {time && (
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-blue-400 shrink-0">
-                  <Clock className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Selected Time</div>
-                  <div className="text-base font-extrabold text-white mt-0.5">{time}</div>
-                </div>
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-blue-400 shrink-0">
+                <Clock className="w-5 h-5" />
               </div>
-            )}
+              <div>
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Selected Time</div>
+                <div className="text-base font-extrabold text-white mt-0.5">{time || 'Confirmed Slot'}</div>
+              </div>
+            </div>
 
-            {timezone && (
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-blue-400 shrink-0">
-                  <Globe className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Timezone</div>
-                  <div className="text-base font-extrabold text-white mt-0.5">{timezone}</div>
-                </div>
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-blue-400 shrink-0">
+                <Globe className="w-5 h-5" />
               </div>
-            )}
+              <div>
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Timezone</div>
+                <div className="text-base font-extrabold text-white mt-0.5">{timezone || 'Local Timezone'}</div>
+              </div>
+            </div>
 
-            {email && (
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-blue-400 shrink-0">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Confirmation Email Sent To</div>
-                  <div className="text-base font-extrabold text-white mt-0.5">{email}</div>
-                </div>
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-blue-400 shrink-0">
+                <Mail className="w-5 h-5" />
               </div>
-            )}
+              <div>
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Confirmation Destination</div>
+                <div className="text-base font-extrabold text-white mt-0.5">{email || 'Work Email'}</div>
+              </div>
+            </div>
 
           </div>
 
@@ -208,25 +221,47 @@ export function ThankYouPage({ onBackToHome }: ThankYouPageProps) {
 
         </div>
 
-        {/* CTA Actions */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button
-            onClick={handleGoHome}
-            className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm transition-all shadow-xl shadow-blue-600/25 flex items-center justify-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Return to Homepage</span>
-          </button>
+        {/* Action Options */}
+        <div className="space-y-4">
+          <div className="text-center text-xs font-bold text-slate-400 uppercase tracking-wider">
+            Where would you like to go next?
+          </div>
 
-          <a
-            href="https://wa.me/919876543210?text=Hi%20Webtron%20Solution,%20I%20just%20scheduled%20a%20strategy%20call!"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-sm border border-slate-700 transition-all flex items-center justify-center gap-2"
-          >
-            <MessageSquare className="w-4 h-4 text-emerald-400" />
-            <span>Chat on WhatsApp</span>
-          </a>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <button
+              onClick={() => handleGoHome()}
+              className="px-5 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs transition-all shadow-xl shadow-blue-600/25 flex items-center justify-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Webtron Homepage</span>
+            </button>
+
+            <button
+              onClick={handleGoAudit}
+              className="px-5 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs border border-slate-700 transition-all flex items-center justify-center gap-2"
+            >
+              <Search className="w-4 h-4 text-blue-400" />
+              <span>Get Free Growth Audit</span>
+            </button>
+
+            <a
+              href={whatsappMessage}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-5 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-2"
+            >
+              <MessageSquare className="w-4 h-4 fill-current" />
+              <span>Chat on WhatsApp</span>
+            </a>
+          </div>
+
+          <div className="flex justify-center gap-6 text-xs text-slate-400 pt-2 font-medium">
+            <button onClick={() => handleGoHome('#services')} className="hover:text-white transition-colors">Our Services</button>
+            <span>•</span>
+            <button onClick={() => handleGoHome('#portfolio')} className="hover:text-white transition-colors">Featured Client Work</button>
+            <span>•</span>
+            <button onClick={() => handleGoHome('#faq')} className="hover:text-white transition-colors">FAQ</button>
+          </div>
         </div>
 
         {/* Meta Ad Account Tracking Badge Note for User */}
@@ -248,3 +283,4 @@ export function ThankYouPage({ onBackToHome }: ThankYouPageProps) {
     </div>
   );
 }
+

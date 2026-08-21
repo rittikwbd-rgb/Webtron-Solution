@@ -528,12 +528,19 @@ END:VCALENDAR`;
           {/* Header Bar */}
           <div className="bg-slate-900 text-white p-5 sm:p-6 flex items-center justify-between gap-4 border-b border-slate-800">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
-                <Video className="w-5 h-5" />
+              <div className="w-11 h-11 rounded-2xl bg-white border border-slate-700 flex items-center justify-center shrink-0 p-1 shadow-md">
+                <img
+                  src="/logo.png"
+                  alt="Webtron Solution Logo"
+                  className="w-full h-full object-contain"
+                  width={44}
+                  height={44}
+                />
               </div>
               <div>
-                <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight">
-                  Book a 1-on-1 Strategy Call
+                <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+                  <span>Book a 1-on-1 Strategy Call</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full hidden sm:inline">Webtron Solution</span>
                 </h3>
                 <p className="text-xs text-slate-400 font-medium">
                   Select your date, time & timezone to schedule a consultation with Webtron Solution
@@ -1101,11 +1108,35 @@ END:VCALENDAR`;
 
                 {/* Instant Actions */}
                 <div className="space-y-2.5 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const finalMeet = submissionResult?.meetLink || `https://meet.google.com/lookup/webtron-${Date.now().toString().substring(6)}`;
+                      const queryParams = new URLSearchParams({
+                        name: fullName,
+                        email: email,
+                        phone: phone,
+                        date: formattedSelectedDate,
+                        time: selectedTime,
+                        tz: selectedTimezone,
+                        meet: finalMeet
+                      }).toString();
+
+                      window.history.pushState({}, '', `/thank-you?${queryParams}`);
+                      window.dispatchEvent(new PopStateEvent('popstate'));
+                      if (onClose) onClose();
+                    }}
+                    className="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 animate-pulse"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Proceed to Thank You & Meta Conversion Page (/thank-you)</span>
+                  </button>
+
                   <a
                     href={submissionResult?.calendarEventUrl || getGoogleCalendarUrl()}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20"
+                    className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md"
                   >
                     <ExternalLink className="w-4 h-4" />
                     <span>View / Add to Google Calendar</span>

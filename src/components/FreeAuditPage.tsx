@@ -70,12 +70,21 @@ export function FreeAuditPage({ onBackToHome, onOpenCalendar }: FreeAuditPagePro
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <button
             onClick={handleGoHome}
-            className="flex items-center gap-2 text-slate-300 hover:text-white font-bold text-sm transition-colors group"
+            className="flex items-center gap-3 text-slate-300 hover:text-white font-bold text-sm transition-colors group"
           >
             <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center group-hover:bg-blue-600 transition-colors">
               <ArrowLeft className="w-4 h-4" />
             </div>
-            <span>Back to Webtron Solution</span>
+            <div className="flex items-center gap-2">
+              <img
+                src="/logo.png"
+                alt="Webtron Solution Logo"
+                className="w-7 h-7 object-contain rounded-lg bg-white p-0.5 shadow-sm"
+                width={28}
+                height={28}
+              />
+              <span className="font-extrabold uppercase tracking-tight text-white hidden sm:inline">Webtron<span className="text-blue-400"> Solution</span></span>
+            </div>
           </button>
 
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">
@@ -315,23 +324,40 @@ export function FreeAuditPage({ onBackToHome, onOpenCalendar }: FreeAuditPagePro
               <div className="text-slate-400"><strong>Turnaround time:</strong> Within 24 business hours</div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
               {onOpenCalendar && (
                 <button
                   type="button"
                   onClick={onOpenCalendar}
-                  className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20"
+                  className="w-full sm:w-auto px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20"
                 >
                   <Clock className="w-4 h-4 text-blue-300" />
-                  <span>Book 1-on-1 Strategy Call Now</span>
+                  <span>Book 1-on-1 Strategy Call</span>
                 </button>
               )}
+
+              <button
+                type="button"
+                onClick={() => {
+                  const queryParams = new URLSearchParams({
+                    fullName,
+                    email,
+                    phone
+                  }).toString();
+                  window.history.pushState({}, '', `/thank-you?${queryParams}`);
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 border border-slate-700"
+              >
+                <Sparkles className="w-4 h-4 text-blue-400" />
+                <span>View Thank You Page (/thank-you)</span>
+              </button>
 
               <a
                 href={`${WHATSAPP_LINK}?text=${encodeURIComponent(whatsappAuditMessage)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20"
+                className="w-full sm:w-auto px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20"
               >
                 <MessageSquare className="w-4 h-4 fill-current" />
                 <span>Notify Team on WhatsApp</span>

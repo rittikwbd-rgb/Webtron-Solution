@@ -30,11 +30,13 @@ export const SEOHead: React.FC = () => {
     setMetaTag('property', 'og:title', 'Webtron Solution | Premier Website Development, Mobile Apps, SEO & Google Ads Agency');
     setMetaTag('property', 'og:description', 'We build high-converting websites, mobile apps, and rank businesses #1 on Google across the US, UK & Europe.');
     setMetaTag('property', 'og:site_name', 'Webtron Solution');
+    setMetaTag('property', 'og:image', window.location.origin + '/logo.png');
 
     // 5. Twitter
     setMetaTag('name', 'twitter:card', 'summary_large_image');
     setMetaTag('name', 'twitter:title', 'Webtron Solution | Digital Growth & Web Development');
     setMetaTag('name', 'twitter:description', 'Custom Website Development, Apps, SEO & Google Business Profile Optimization. WhatsApp: ' + WHATSAPP_NUMBER);
+    setMetaTag('name', 'twitter:image', window.location.origin + '/logo.png');
 
     // 6. Canonical Link
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
@@ -50,7 +52,8 @@ export const SEOHead: React.FC = () => {
       "@context": "https://schema.org",
       "@type": "ProfessionalService",
       "name": "Webtron Solution",
-      "image": window.location.origin + "/assets/images/hero_agency_bg.jpg",
+      "logo": window.location.origin + "/logo.png",
+      "image": window.location.origin + "/logo.png",
       "@id": window.location.href + "#organization",
       "url": window.location.href,
       "telephone": WHATSAPP_NUMBER,

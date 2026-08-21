@@ -66,6 +66,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ currentRegion, onOpenC
               transition={{ duration: 0.5 }}
               className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur-xl max-w-full text-center"
             >
+              <img
+                src="/logo.png"
+                alt="Webtron Solution Logo"
+                className="w-4 h-4 object-contain rounded-full bg-slate-50"
+                width={16}
+                height={16}
+              />
               <span className="text-slate-900 font-extrabold text-[11px] sm:text-xs">{t.topBadge}</span>
             </motion.div>
 

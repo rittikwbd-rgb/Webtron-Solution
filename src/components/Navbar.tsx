@@ -157,8 +157,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           
           {/* Logo & Live Status Indicator */}
           <a href="#" className="flex items-center gap-3 group">
-            <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-blue-600 shadow-md group-hover:scale-105 transition-transform duration-300 text-white">
-              <Sparkles className="w-4.5 h-4.5 text-white group-hover:rotate-12 transition-transform duration-300" />
+            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-white border border-slate-200/80 shadow-md group-hover:scale-105 transition-transform duration-300 overflow-hidden p-1">
+              <img
+                src="/logo.png"
+                alt="Webtron Solution Logo"
+                className="w-full h-full object-contain"
+                width={40}
+                height={40}
+              />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">

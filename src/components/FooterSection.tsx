@@ -21,8 +21,14 @@ export const FooterSection: React.FC<FooterSectionProps> = ({ currentLanguage = 
           {/* Column 1: Agency Brand & Mission */}
           <div className="lg:col-span-2 space-y-4">
             <a href="#" className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md">
-                <Sparkles className="w-4 h-4 text-white" />
+              <div className="w-9 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center shadow-sm overflow-hidden p-1">
+                <img
+                  src="/logo.png"
+                  alt="Webtron Solution Logo"
+                  className="w-full h-full object-contain"
+                  width={36}
+                  height={36}
+                />
               </div>
               <span className="text-lg font-black text-slate-900 tracking-tight uppercase">
                 WEBTRON<span className="text-blue-600"> SOLUTION</span>
@@ -57,7 +63,6 @@ export const FooterSection: React.FC<FooterSectionProps> = ({ currentLanguage = 
               <li><a href="#why-choose-us" className="hover:text-blue-600 transition-colors">{t.links.whyUs}</a></li>
               <li><a href="#business-growth" className="hover:text-blue-600 transition-colors">{t.links.growth}</a></li>
               <li><a href="/free-website-audit" className="text-blue-600 font-bold hover:underline">Free Website & Speed Audit</a></li>
-              <li><a href="/thank-you" className="hover:text-blue-600 transition-colors">Meta Ads Thank You Page (/thank-you)</a></li>
               <li><a href="#faq" className="hover:text-blue-600 transition-colors">{t.links.faq}</a></li>
             </ul>
           </div>

@@ -59,12 +59,26 @@ export const StickyWhatsAppCTA: React.FC<StickyWhatsAppCTAProps> = ({ currentLan
             <X className="w-3 h-3" />
           </button>
 
-          <div className="flex items-center gap-2.5 mb-2">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
-            </span>
-            <span className="text-xs font-extrabold text-emerald-700">{t.status}</span>
+          <div className="flex items-center justify-between gap-2 mb-2.5 pb-2 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-lg bg-white border border-slate-200 overflow-hidden p-0.5 shadow-2xs shrink-0">
+                <img
+                  src="/logo.png"
+                  alt="Webtron Solution Logo"
+                  className="w-full h-full object-contain"
+                  width={24}
+                  height={24}
+                />
+              </div>
+              <span className="text-[11px] font-black text-slate-900 tracking-tight uppercase">Webtron Solution</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+              </span>
+              <span className="text-[10px] font-extrabold text-emerald-700">Live</span>
+            </div>
           </div>
 
           <p className="text-xs text-slate-600 leading-snug mb-3 font-medium">

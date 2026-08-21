@@ -51,8 +51,14 @@ export const InteractiveGrowthCalculatorModal: React.FC<GrowthCalculatorModalPro
           </button>
 
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 shadow-sm">
-              <Calculator className="w-6 h-6" />
+            <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 shadow-sm p-1.5 flex items-center justify-center shrink-0">
+              <img
+                src="/logo.png"
+                alt="Webtron Solution Logo"
+                className="w-full h-full object-contain"
+                width={48}
+                height={48}
+              />
             </div>
             <div>
               <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900">{t.title}</h3>

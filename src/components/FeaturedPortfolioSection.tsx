@@ -268,7 +268,13 @@ export const FeaturedPortfolioSection: React.FC<FeaturedPortfolioSectionProps> =
                   <div className="absolute bottom-4 left-4 right-4 p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 backdrop-blur-md text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
                     <div className="space-y-0.5 text-center sm:text-left">
                       <div className="text-sm font-bold flex items-center justify-center sm:justify-start gap-2 text-blue-400">
-                        <Sparkles className="w-4 h-4 text-amber-400" />
+                        <img
+                          src="/logo.png"
+                          alt="Webtron Solution"
+                          className="w-4 h-4 object-contain rounded bg-white p-0.5"
+                          width={16}
+                          height={16}
+                        />
                         <span>Built by Webtron Solution</span>
                       </div>
                       <p className="text-xs text-slate-300">
